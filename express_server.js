@@ -31,12 +31,13 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/urls", (req,res) => {
-  console.log(req.params);
+  res.locals.title = "TinyApp";
   const templateVars = { urls : urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
+  res.locals.title = "URL - TinyApp Example";
   const key = req.params.id;
   const templateVars = { id: key, longURL: urlDatabase[key] };
   res.render("urls_show", templateVars);
