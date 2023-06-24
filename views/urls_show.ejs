@@ -1,12 +1,23 @@
 <%- include('partials/_header') %>
 
-<div class="card text-center">
-  <div class="card-header"></div>
-  <div class="card-body">
-    <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-    <p class="card-text">Short URL ID: <a href="/u/<%= id %>"><%= id %></a></p>
+<div class="container-fluid p-3">
+  <div class="card">
+    <div class="card-header"></div>
+    <div class="card-body">
+      <h5 class="card-title">TinyURL for: <%= longURL %></h5>
+      <p class="card-text">Short URL ID: <a href="/u/<%= id %>"><%= id %></a></p>
+    </div>
+    <div class="card-footer">
+      <h5>Edit</h5>
+      <form action="/urls/<%= id %>" method="POST">
+        <div class="form-group">
+          <label for="newURL">New URL :</label>
+          <input class="form-control form-control-sm" type="text" name="newURL" placeholder="http://">
+        </div>
+        <button class="btn btn-dark btn-sm" type="submit">Update</button>
+      </form>
+    </div>
   </div>
-  <div class="card-footer text-muted"></div>
 </div>
 
 <%- include('partials/_footer') %>
