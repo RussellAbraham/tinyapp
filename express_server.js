@@ -67,6 +67,16 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+app.post("/urls/:id/delete", (req,res)=>{
+  const id = req.params.id;
+  if (Reflect.has(urlDatabase, id)) {
+    delete urlDatabase[id];
+    res.redirect("/urls");
+  } else {
+    res.status(404).send("URL not found");
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
