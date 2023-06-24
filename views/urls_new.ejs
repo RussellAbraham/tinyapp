@@ -1,0 +1,14 @@
+<%- include('partials/_header') %>
+
+<main class="container p-2">
+  <h3>Create TinyURL</h3>
+  <form action="/urls" method="POST">
+    <div class="form-group">
+      <label for="longURL">Enter a URL:</label>
+      <input class="form-control form-control-sm" type="text" name="longURL" placeholder="http://"/>
+    </div>
+    <button type="submit" class="btn btn-dark btn-sm">Submit</button>
+  </form>
+</main>
+
+<%- include('partials/_footer') %>
