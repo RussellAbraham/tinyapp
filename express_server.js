@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
+const cookieParser = require('cookie-parser');
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
+
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 const urlDatabase = {
@@ -32,7 +35,10 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req,res) => {
   res.locals.title = "TinyApp";
-  const templateVars = { urls : urlDatabase };
+  const templateVars = { 
+    username : req.cookies.username,
+    urls : urlDatabase 
+  };
   res.render("urls_index", templateVars);
 });
 
