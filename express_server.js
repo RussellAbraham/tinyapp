@@ -83,6 +83,14 @@ app.get("/register", (req,res) => {
   res.render("urls_register", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  res.locals.title = "Login";
+  const templateVars = {
+    user : users[req.cookies.user_id]
+  };  
+  res.render("urls_login", templateVars);
+});
+
 app.get("/urls/:id", (req, res) => {
   res.locals.title = "URL - TinyApp Example";
   const key = req.params.id;
