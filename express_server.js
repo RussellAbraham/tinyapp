@@ -99,6 +99,21 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userId = generateRandomString();
+  const newUser = {
+    id : userId,
+    email : email,
+    password : password
+  };
+  users[userId] = newUser;
+  res.cookie("user_id", userId);
+  console.log(users);
+  res.redirect("/urls");
+});
+
 app.post("/login", (req, res) => {
   const username = req.body.username;
   res.cookie("username", username);
