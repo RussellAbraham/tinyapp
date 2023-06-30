@@ -48,16 +48,17 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   res.locals.title = "TinyApp";
   const templateVars = { 
-    username : req.cookies.username,
+    username : users[req.cookies.user_id],
     urls : urlDatabase 
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    username : req.cookies.username
-  }
+  const templateVars = { 
+    username : users[req.cookies.user_id],
+    urls : urlDatabase 
+  };
   res.locals.title = "New URL - TinyApp Example";
 
   res.render("urls_new", templateVars);
@@ -76,6 +77,8 @@ app.get("/urls/:id", (req, res) => {
   const key = req.params.id;
   const templateVars = { 
     username : req.cookies.username,
+    username : users[req.cookies.user_id],
+    urls : urlDatabase,    
     id: key, 
     longURL: urlDatabase[key] 
   };
