@@ -35,6 +35,15 @@ const generateRandomString = function() {
   }
   return result;
 };
+const getUserByEmail = function(email) {
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+};
 
 
 app.get("/", (req, res) => {
