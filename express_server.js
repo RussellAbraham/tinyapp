@@ -151,9 +151,17 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = getUserByEmail(email);
+  if (!user) {
+    res.status(403).send("User not found");
+  } else if (user.password !== password) {
+    res.status(403).send("Incorrect Password");
+  } else {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
+  }
 });
 
 app.post("/logout", (req,res) => {
