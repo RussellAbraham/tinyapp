@@ -8,6 +8,7 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
+// Models
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -25,6 +26,7 @@ const users = {
   },
 };
 
+// Helpers
 const generateRandomString = function() {
   const length = 6;
   let result = '';
@@ -46,6 +48,7 @@ const getUserByEmail = function(email) {
 };
 
 
+// Routes
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -57,26 +60,25 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   res.locals.title = "TinyApp";
   const templateVars = { 
-    username : users[req.cookies.user_id],
+    user : users[req.cookies.user_id],
     urls : urlDatabase 
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  res.locals.title = "New URL - TinyApp Example";
   const templateVars = { 
-    username : users[req.cookies.user_id],
+    user : users[req.cookies.user_id],
     urls : urlDatabase 
   };
-  res.locals.title = "New URL - TinyApp Example";
-
   res.render("urls_new", templateVars);
 });
 
 app.get("/register", (req,res) => {
   res.locals.title = "Register";
   const templateVars = {
-    username : req.cookies.username
+    user : users[req.cookies.user_id]
   };  
   res.render("urls_register", templateVars);
 });
@@ -85,8 +87,7 @@ app.get("/urls/:id", (req, res) => {
   res.locals.title = "URL - TinyApp Example";
   const key = req.params.id;
   const templateVars = { 
-    username : req.cookies.username,
-    username : users[req.cookies.user_id],
+    user : users[req.cookies.user_id],
     urls : urlDatabase,    
     id: key, 
     longURL: urlDatabase[key] 
@@ -114,16 +115,31 @@ app.post("/urls", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  if (!email || !password) {
+    res.status(400).send("Email and password cannot be empty.");
+    return;
+  }
+  if (getUserByEmail(email)) {
+    res.status(400).send("Email already exists. Please choose a different email address.");
+  }
+
   const userId = generateRandomString();
+  
   const newUser = {
     id : userId,
     email : email,
     password : password
   };
+
   users[userId] = newUser;
+
   res.cookie("user_id", userId);
+  
+  // remove later
   console.log(users);
+  
   res.redirect("/urls");
+
 });
 
 app.post("/login", (req, res) => {
@@ -133,7 +149,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req,res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
