@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieSession = require("cookie-session");
 const bcrypt = require('bcryptjs');
-
+const { generateRandomString, getUserByEmail, urlsForUser } = require("./helpers");
 const PORT = 8080; // default port 8080
 
 const app = express();
@@ -16,10 +16,6 @@ app.use(cookieSession({
 app.use(express.urlencoded({ extended: true }));
 
 // Models
-//const urlDatabase = {
-//  "b2xVn2": "http://www.lighthouselabs.ca",
-//  "9sm5xK": "http://www.google.com"
-//};
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -41,36 +37,6 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk",
   },
-};
-
-// Helpers
-const generateRandomString = function() {
-  const length = 6;
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    result += characters.charAt(randomIndex);
-  }
-  return result;
-};
-const getUserByEmail = function(email, usersDatabase) {
-  for (const userId in usersDatabase) {
-    const user = usersDatabase[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
-};
-const urlsForUser = function(id, urlDatabase) {
-  const userUrls = {};
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) {
-      userUrls[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return userUrls;
 };
 
 
