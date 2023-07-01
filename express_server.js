@@ -202,11 +202,12 @@ app.post("/register", (req, res) => {
   }
 
   const userId = generateRandomString();
-  
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   const newUser = {
     id : userId,
     email : email,
-    password : password
+    password : hashedPassword
   };
 
   users[userId] = newUser;
