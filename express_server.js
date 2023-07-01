@@ -54,9 +54,9 @@ const generateRandomString = function() {
   }
   return result;
 };
-const getUserByEmail = function(email) {
-  for (const userId in users) {
-    const user = users[userId];
+const getUserByEmail = function(email, usersDatabase) {
+  for (const userId in usersDatabase) {
+    const user = usersDatabase[userId];
     if (user.email === email) {
       return user;
     }
@@ -201,7 +201,7 @@ app.post("/register", (req, res) => {
     res.status(400).send("Email and password cannot be empty.");
     return;
   }
-  if (getUserByEmail(email)) {
+  if (getUserByEmail(email, users)) {
     res.status(400).send("Email already exists. Please choose a different email address.");
   }
 
@@ -224,7 +224,7 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
   if (!user) {
     res.status(403).send("User not found");
     return;
