@@ -25,8 +25,8 @@ const urlDatabase = {
   },
 };
 const users = {
-  aj48lW: {
-    id: "userRandomID",
+  aJ48lW: {
+    id: "aJ48lW",
     email: "user@example.com",
     password: "purple-monkey-dinosaur",
   },
@@ -57,6 +57,15 @@ const getUserByEmail = function(email) {
   }
   return null;
 };
+const urlsForUser = function(id, urlDatabase) {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userUrls;
+};
 
 
 // Routes
@@ -72,7 +81,7 @@ app.get("/urls", (req,res) => {
   res.locals.title = "TinyApp";
   const templateVars = { 
     user : users[req.cookies.user_id],
-    urls : urlDatabase 
+    urls : urlsForUser(req.cookies.user_id, urlDatabase)
   };
   res.render("urls_index", templateVars);
 });
