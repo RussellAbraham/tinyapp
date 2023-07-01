@@ -223,12 +223,14 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(email);
   if (!user) {
     res.status(403).send("User not found");
-  } else if (user.password !== password) {
-    res.status(403).send("Incorrect Password");
-  } else {
-    res.cookie("user_id", user.id);
-    res.redirect("/urls");
+    return;
   }
+  if (!bcrypt.compareSync(password, user.password)) {
+    res.status(403).send("Incorrect Password");
+    return;
+  } 
+  res.cookie("user_id", user.id);  
+  res.redirect("/urls");
 });
 
 app.post("/logout", (req,res) => {
@@ -237,7 +239,7 @@ app.post("/logout", (req,res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userID = req.session.user_id;
+  const userID = req.cookies.user_id;
   const userUrls = urlsForUser(userID, urlDatabase);
   if (Reflect.has(userUrls, req.params.shortURL)) {
     const shortURL = req.params.shortURL;
@@ -249,7 +251,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  const userID = req.session.user_id;
+  const userID = req.cookies.user_id;
   const userUrls = urlsForUser(userID, urlDatabase);
   if (Reflect.has(userUrls, req.params.id)) {
     const shortURL = req.params.id;
