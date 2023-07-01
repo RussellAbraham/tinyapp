@@ -127,16 +127,38 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  const userId = req.cookies.user_id;
+  const shortURL = req.params.id;
+  const urlEntry = urlDatabase[shortURL];
+
+  // Check if user is logged in
+  if (!userId) {
+    res.status(401).send("You must be logged in to view this URL.");
+    return;
+  }
+
+  // Check if the URL exists
+  if (!urlEntry) {
+    res.status(404).send("Short URL not found.");
+    return;
+  }
+
+  // Check if the URL belongs to the logged-in user
+  if (urlEntry.userID !== userId) {
+    res.status(403).send("You do not have permission to view this URL.");
+    return;
+  }
+
   res.locals.title = "URL - TinyApp Example";
-  const key = req.params.id;
-  const templateVars = { 
-    user : users[req.cookies.user_id],
-    urls : urlDatabase,    
-    id: key, 
-    longURL: urlDatabase[key].longURL 
+  const templateVars = {
+    user: users[userId],
+    urls: urlDatabase,
+    id: shortURL,
+    longURL: urlEntry.longURL,
   };
   res.render("urls_show", templateVars);
 });
+
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
@@ -188,10 +210,6 @@ app.post("/register", (req, res) => {
   users[userId] = newUser;
 
   res.cookie("user_id", userId);
-  
-  // remove later
-  console.log(users);
-  
   res.redirect("/urls");
 
 });
@@ -215,24 +233,27 @@ app.post("/logout", (req,res) => {
   res.redirect("/login");
 });
 
-app.post("/urls/:id/delete", (req,res)=>{
-  const id = req.params.id;
-  if (Reflect.has(urlDatabase, id)) {
-    delete urlDatabase[id];
-    res.redirect("/urls");
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const userID = req.session.user_id;
+  const userUrls = urlsForUser(userID, urlDatabase);
+  if (Reflect.has(userUrls, req.params.shortURL)) {
+    const shortURL = req.params.shortURL;
+    delete urlDatabase[shortURL];
+    res.redirect('/urls');
   } else {
-    res.status(404).send("URL not found");
+    res.status(401).send("You do not have authorization to delete this short URL.");
   }
 });
 
 app.post("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  const newURL = req.body.newURL;
-  if (Reflect.has(urlDatabase, id)) {
-    urlDatabase[id].longURL = newURL;
-    res.redirect("/urls");
+  const userID = req.session.user_id;
+  const userUrls = urlsForUser(userID, urlDatabase);
+  if (Reflect.has(userUrls, req.params.id)) {
+    const shortURL = req.params.id;
+    urlDatabase[shortURL].longURL = req.body.newURL;
+    res.redirect('/urls');
   } else {
-    res.status(404).send("URL not found");
+    res.status(401).send("You do not have authorization to edit this short URL.");
   }
 });
 
