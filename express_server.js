@@ -124,16 +124,16 @@ app.get("/urls/:id", (req, res) => {
     user : users[req.cookies.user_id],
     urls : urlDatabase,    
     id: key, 
-    longURL: urlDatabase[key] 
+    longURL: urlDatabase[key].longURL 
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
-  if(longURL){
-    res.redirect(longURL);
+  const urlEntry = urlDatabase[shortURL];
+  if(urlEntry && urlEntry.longURL){
+    res.redirect(urlEntry.longURL);
   } else {
     res.status(404).send("Short URL not found.");
   }
@@ -149,7 +149,11 @@ app.post("/urls", (req, res) => {
   // user is logged in, proceed with URL shortening
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  const userID = req.cookies.user_id;
+  urlDatabase[shortURL] = {
+    longURL : longURL,
+    userID : userID
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -216,7 +220,7 @@ app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   const newURL = req.body.newURL;
   if (Reflect.has(urlDatabase, id)) {
-    urlDatabase[id] = newURL;
+    urlDatabase[id].longURL = newURL;
     res.redirect("/urls");
   } else {
     res.status(404).send("URL not found");
