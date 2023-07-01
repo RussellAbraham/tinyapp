@@ -1,7 +1,8 @@
 const express = require("express");
-const app = express();
 const cookieParser = require('cookie-parser');
 const PORT = 8080; // default port 8080
+
+const app = express();
 
 app.set("view engine", "ejs");
 
@@ -79,16 +80,24 @@ app.get("/register", (req,res) => {
   res.locals.title = "Register";
   const templateVars = {
     user : users[req.cookies.user_id]
-  };  
-  res.render("urls_register", templateVars);
+  };
+  if (req.cookies.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_register", templateVars);
+  }
 });
 
 app.get("/login", (req, res) => {
   res.locals.title = "Login";
   const templateVars = {
     user : users[req.cookies.user_id]
-  };  
-  res.render("urls_login", templateVars);
+  };
+  if (req.cookies.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
