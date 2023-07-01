@@ -68,12 +68,19 @@ app.get("/urls", (req,res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.locals.title = "New URL - TinyApp Example";
-  const templateVars = { 
-    user : users[req.cookies.user_id],
-    urls : urlDatabase 
-  };
-  res.render("urls_new", templateVars);
+  // check if user is logged in
+  if (!req.cookies.user_id) {
+    // user is not logged in, redirect to the login page
+    res.redirect("/login");
+  } else {
+    // user is logged in, render the new URL form
+    res.locals.title = "New URL - TinyApp Example";
+    const templateVars = { 
+      user : users[req.cookies.user_id],
+      urls : urlDatabase 
+    };
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/register", (req,res) => {
@@ -123,6 +130,13 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  // check if user is logged in
+  if (!req.cookies.user_id) {
+    // user is not logged in, respond with an error message
+    res.status(403).send("You must be logged in to shorten URLs.");
+    return;
+  }
+  // user is logged in, proceed with URL shortening
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
